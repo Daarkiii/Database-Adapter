@@ -26,19 +26,6 @@ import java.util.concurrent.CompletableFuture
 interface Connection {
 
     /**
-     * Opens a connection with the provider from the holder
-     *
-     * @param connectionHolder stores the data for the connection
-     * @return a connection with the provider
-     */
-    fun openConnection(connectionHolder: IConnectionHolder) : Connection {
-        return when(connectionHolder.provider) {
-            Provider.MONGODB -> MongoConnection(connectionHolder)
-            Provider.MYSQL -> MySqlConnection(connectionHolder)
-        }
-    }
-
-    /**
      * Loads a database table and creates it if it's not existing
      *
      * @param name of the table
@@ -57,6 +44,23 @@ interface Connection {
      */
     fun loadTableAsync(name: String, vararg pairs: DataPair<ColumnType>) : CompletableFuture<Table> {
         return CompletableFuture.supplyAsync { this.loadTable(name, *pairs) }
+    }
+
+    companion object {
+
+        /**
+         * Opens a connection with the provider from the holder
+         *
+         * @param connectionHolder stores the data for the connection
+         * @return a connection with the provider
+         */
+        @JvmStatic
+        fun openConnection(connectionHolder: IConnectionHolder) : Connection {
+            return when(connectionHolder.provider) {
+                Provider.MONGODB -> MongoConnection(connectionHolder)
+                Provider.MYSQL -> MySqlConnection(connectionHolder)
+            }
+        }
     }
 
 }
