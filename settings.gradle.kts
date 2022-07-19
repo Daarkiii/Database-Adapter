@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-rootProject.name = "DatabaseAdapter"
+rootProject.name = "database-adapter"
 

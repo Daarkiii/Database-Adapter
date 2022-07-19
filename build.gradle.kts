@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.10"
     id ("com.github.johnrengelman.shadow") version "7.0.0"
+    id("java-library")
+    `maven-publish`
 }
 
 group = "me.daarkii"
@@ -31,6 +34,7 @@ repositories {
 apply {
     plugin("org.jetbrains.kotlin.jvm")
     plugin("com.github.johnrengelman.shadow")
+    plugin("maven-publish")
 }
 
 dependencies {
@@ -43,4 +47,41 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType<ShadowJar> {
+    archiveFileName.set("database-adapter-$version.jar")
+}
+
+//publish test
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+
+    publications {
+        create<MavenPublication>("maven") {
+            artifact("build/libs/database-adapter-$version.jar") {
+                extension = ".jar"
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "nexus"
+
+            url = if(version.toString().contains("SNAPSHOT"))
+                uri("https://repo.aysu.tv/repository/snapshots/")
+            else
+                uri("https://repo.aysu.tv/repository/releases/")
+
+            credentials {
+                username = System.getenv("NEXUS_USERNAME")
+                password = System.getenv("NEXUS_PASSWORD")
+            }
+        }
+    }
+
 }
