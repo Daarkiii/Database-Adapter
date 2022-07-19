@@ -182,4 +182,18 @@ class MongoTable(
         this.collection.replaceOne(filter, current)
     }
 
+    /**
+     * Deletes all entries, with the appropriate filters
+     *
+     * @param filter the filters for the remove query including name of the column && the value to filter
+     */
+    override fun delete(vararg filter: DataPair<Any>) {
+
+        //build filter Document
+        val filterDoc = Document()
+        filter.forEach { filterDoc.append(it.key, it.value) }
+
+        this.collection.deleteMany(filterDoc)
+    }
+
 }

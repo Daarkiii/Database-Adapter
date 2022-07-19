@@ -170,4 +170,20 @@ interface Table {
     fun updateAsync(query: UpdateQuery, shouldCheck: Boolean) : CompletableFuture<Void> {
         return CompletableFuture.runAsync { this.update(query, shouldCheck) }
     }
+
+    /**
+     * Deletes all entries, with the appropriate filters
+     *
+     * @param filter the filters for the remove query including name of the column && the value to filter
+     */
+    fun delete(vararg filter: DataPair<Any>)
+
+    /**
+     * Deletes all entries async, with the appropriate filters
+     *
+     * @param filter the filters for the remove query including name of the column && the value to filter
+     */
+    fun deleteAsync(vararg filter: DataPair<Any>) : CompletableFuture<Void> {
+        return CompletableFuture.runAsync { this.delete(*filter) }
+    }
 }

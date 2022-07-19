@@ -53,7 +53,7 @@ class MySqlTable(
         mySqlAdapter.dataSource.connection.use { it.prepareStatement(builder.toString()).use { ps ->
 
             for(i in filters.indices)
-                ps.setObject(i, filters[i])
+                ps.setObject(i+1, filters[i])
 
             val result = ps.executeQuery()
 
@@ -92,7 +92,7 @@ class MySqlTable(
         mySqlAdapter.dataSource.connection.use { it.prepareStatement(builder.toString()).use { ps ->
 
             for(i in filters.indices)
-                ps.setObject(i, filters[i])
+                ps.setObject(i+1, filters[i])
 
             val result = ps.executeQuery()
 
@@ -131,7 +131,7 @@ class MySqlTable(
         mySqlAdapter.dataSource.connection.use { it.prepareStatement(final).use { ps ->
 
             for(i in query.insertable.indices) {
-                ps.setObject(i, query.insertable[i].value)
+                ps.setObject(i+1, query.insertable[i].value)
             }
 
             ps.executeUpdate()
@@ -197,6 +197,33 @@ class MySqlTable(
                     count++
                     ps.setObject(count, query.filter[i].value)
                 }
+            }
+
+            ps.executeUpdate()
+        } }
+    }
+
+    /**
+     * Deletes all entries, with the appropriate filters
+     *
+     * @param filter the filters for the remove query including name of the column && the value to filter
+     */
+    override fun delete(vararg filter: DataPair<Any>) {
+
+        val builder = StringBuilder().append("DELETE FROM $name WHERE ")
+        val filters = filter.toList()
+
+        for(i in filters.indices) {
+            builder.append("${filters[i].key} = ?")
+
+            if(i != filters.lastIndex)
+                builder.append(" AND ")
+        }
+
+        mySqlAdapter.dataSource.connection.use { it.prepareStatement(builder.toString()).use { ps ->
+
+            for(i in filters.indices) {
+                ps.setObject(i+1, filter[i].value)
             }
 
             ps.executeUpdate()
