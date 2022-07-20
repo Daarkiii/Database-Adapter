@@ -39,8 +39,10 @@ apply {
 
 dependencies {
 
+    //mysql
     api("com.zaxxer", "HikariCP", "3.4.5")
 
+    //mongoDB
     api("org.mongodb", "mongo-java-driver", "3.12.10")
 
 }
@@ -73,9 +75,9 @@ publishing {
             name = "nexus"
 
             url = if(version.toString().contains("SNAPSHOT"))
-                uri("https://repo.aysu.tv/repository/snapshots/")
+                uri("https://repo.aysu.tv/repository/public-snapshots/")
             else
-                uri("https://repo.aysu.tv/repository/releases/")
+                uri("https://repo.aysu.tv/repository/public-releases/")
 
             credentials {
                 username = System.getenv("NEXUS_USERNAME")
@@ -83,5 +85,4 @@ publishing {
             }
         }
     }
-
 }

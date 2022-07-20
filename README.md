@@ -70,17 +70,17 @@ In this table, all queries can now be executed, such as update, insert or select
 You can easily use the adapter in your project, look below for Maven and Gradle and otherwise in the release tab!
 
 ### Maven:
-````
+``` xml
 <repositories>
     <!--For releases and stable builds-->
     <repository>
 	    <id>releases</id>
-	    <url>https://repo.aysu.tv/repository/releases/</url>
+	    <url>https://repo.aysu.tv/repository/public-releases/</url>
     </repository>
     <!--For snapshots-->
     <repository>
 	    <id>snapshots</id>
-	    <url>https://repo.aysu.tv/repository/snapshots/</url>
+	    <url>https://repo.aysu.tv/repository/public-snapshots/</url>
     </repository>
 </repositories>
 
@@ -91,19 +91,20 @@ You can easily use the adapter in your project, look below for Maven and Gradle 
         <version>VERSION</version>
     </dependency>
 </dependencies>
-````
+``` 
 
 ### Gradle:
-````
+``` kotlin
+
 repositories {
     //For releases and stable builds
-    maven("https://repo.aysu.tv/repository/releases/")
+    maven("https://repo.aysu.tv/repository/public-releases/")
 
     //For snapshots
-    maven("https://repo.aysu.tv/repository/snapshots/")
+    maven("https://repo.aysu.tv/repository/public-snapshots/")
 }
 
 dependencies {
     implementation("me.daarkii", "database-adapter", "VERSION")
 }
-````
+```
