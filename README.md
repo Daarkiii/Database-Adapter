@@ -13,7 +13,7 @@ Currently, the following databases are integrated:
 ## API
 First you need to create a connection, for this you need an IConnectionHolder, this you create with the provider and database data.
 
-````
+```` java
 private Connection connection;
     
 public void start() {
@@ -34,7 +34,7 @@ public Connection getConnection() {
 
 With a connection like this, you can load tables, also here it is recommended to load them only once
 
-````
+```` java
 private Connection connection;
 private Table defaultTable;
 
@@ -75,12 +75,12 @@ You can easily use the adapter in your project, look below for Maven and Gradle 
     <!--For releases and stable builds-->
     <repository>
 	    <id>releases</id>
-	    <url>https://repo.aysu.tv/repository/public-releases/</url>
+	    <url>https://repo.aysu.tv/repository/releases/</url>
     </repository>
     <!--For snapshots-->
     <repository>
 	    <id>snapshots</id>
-	    <url>https://repo.aysu.tv/repository/public-snapshots/</url>
+	    <url>https://repo.aysu.tv/repository/snapshots/</url>
     </repository>
 </repositories>
 
@@ -98,10 +98,10 @@ You can easily use the adapter in your project, look below for Maven and Gradle 
 
 repositories {
     //For releases and stable builds
-    maven("https://repo.aysu.tv/repository/public-releases/")
+    maven("https://repo.aysu.tv/repository/releases/")
 
     //For snapshots
-    maven("https://repo.aysu.tv/repository/public-snapshots/")
+    maven("https://repo.aysu.tv/repository/snapshots/")
 }
 
 dependencies {

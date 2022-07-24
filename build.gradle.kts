@@ -18,14 +18,15 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.10"
-    id ("com.github.johnrengelman.shadow") version "7.0.0"
-    id("java-library")
-    `maven-publish`
+    kotlin("jvm") version "1.7.10" //kotlin
+    id ("com.github.johnrengelman.shadow") version "7.0.0" //build the jar
+    id("java-library") //need for publishing
+    `maven-publish` //need for publishing
+    id("org.jetbrains.dokka") version "1.7.10" //need for javadoc building
 }
 
 group = "me.daarkii"
-version = "1.0.0"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -35,6 +36,7 @@ apply {
     plugin("org.jetbrains.kotlin.jvm")
     plugin("com.github.johnrengelman.shadow")
     plugin("maven-publish")
+    plugin("org.jetbrains.dokka")
 }
 
 dependencies {
@@ -45,7 +47,13 @@ dependencies {
     //mongoDB
     api("org.mongodb", "mongo-java-driver", "3.12.10")
 
+    //needed to create javaDocs
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.7.10")
 }
+
+/**
+ * Build settings
+ */
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
@@ -53,31 +61,76 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<ShadowJar> {
     archiveFileName.set("database-adapter-$version.jar")
+    exclude("*.pom")
+    exclude("**/*.kotlin_metadata")
+    exclude("**/*.kotlin_module")
+    exclude("**/*.kotlin_builtins")
 }
 
-//publish test
+val shadowJar: ShadowJar by tasks
+val javadoc: Javadoc by tasks
+val jar: Jar by tasks
+val build: Task by tasks
+val clean: Task by tasks
+
+val sourcesForRelease = task<Copy>("sourcesForRelease") {
+    from("src/main/kotlin")
+    into("build/filteredSrc")
+    includeEmptyDirs = false
+}
+
+val sourcesJar = task<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourcesForRelease.destinationDir)
+
+    dependsOn(sourcesForRelease)
+}
+
+//Create javadocs
+val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
+
+val javadocJar: TaskProvider<Jar> by tasks.registering(Jar::class) {
+    dependsOn(dokkaHtml)
+    archiveClassifier.set("javadoc")
+    from(dokkaHtml.outputDirectory)
+}
+
+//build all files (normal, javadoc, source)
+build.apply {
+    dependsOn(jar)
+    dependsOn(javadocJar)
+    dependsOn(sourcesJar)
+    dependsOn(shadowJar)
+
+    jar.mustRunAfter(clean)
+    shadowJar.mustRunAfter(sourcesJar)
+}
+
+/**
+ * Publish settings
+ */
+
 java {
-    withSourcesJar()
     withJavadocJar()
+    withSourcesJar()
 }
 
 publishing {
 
     publications {
         create<MavenPublication>("maven") {
-            artifact("build/libs/database-adapter-$version.jar") {
-                extension = ".jar"
-            }
+            from(components["java"])
         }
     }
+
     repositories {
         maven {
             name = "nexus"
 
             url = if(version.toString().contains("SNAPSHOT"))
-                uri("https://repo.aysu.tv/repository/public-snapshots/")
+                uri("https://repo.aysu.tv/repository/snapshots/")
             else
-                uri("https://repo.aysu.tv/repository/public-releases/")
+                uri("https://repo.aysu.tv/repository/releases/")
 
             credentials {
                 username = System.getenv("NEXUS_USERNAME")
