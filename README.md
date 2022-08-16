@@ -9,8 +9,6 @@ Currently, the following databases are integrated:
 - MariaDB
 - MongoDB
 
-tEST
-
 ***
 ## API
 First you need to create a connection, for this you need an IConnectionHolder, this you create with the provider and database data.
